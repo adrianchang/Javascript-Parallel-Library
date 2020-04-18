@@ -13,6 +13,14 @@ We are going to use WebAssembly Threads and SIMD to build a Javascript parallel 
 ## How to setup
 
 * [Intsall emcc](https://emscripten.org/docs/getting_started/downloads.html#sdk-download-and-install)
-* 
+
+## For developers
+
+* ### Compile .c with emcc
+
+  Run emsdk/upstream/emscripten/emcc fileToComile.c
+
+
+
 
 ## Future Work
