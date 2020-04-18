@@ -1,4 +1,4 @@
-# JS parallel framework using SIMD
+# Javascript parallel framework
 
 ## Overview
 
@@ -16,5 +16,3 @@ We are going to use WebAssembly Threads and SIMD to build a Javascript parallel 
 * 
 
 ## Future Work
-
-# Javascript-Parallel-Library
