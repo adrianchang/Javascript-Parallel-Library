@@ -2,13 +2,16 @@
 
 ## Overview
 
-We are going to use WebAssembly Threads and SIMD to build a Javascript parallel library so that users can fasten their program by simply calling our functions.
+We are going to use WebAssembly Threads and SIMD to build a Javascript parallel library so that users can fasten their program by simply calling our functions. 
 
 * Support functionalities:
   * SIMD primitives
 * Example usage:
   * TBD
 
+## Design rationale 
+
+The reason why are implementing our own simd primitives such as array addition in js rather than provide simd operation wrapper is that writing explicit simd in js is not a good idea. The web programmer don't know about the underlying system that the code is running on. Thus, they don't know about the cache size etc... So it's not a good idea to write explicit simd code in js. Also, if one really wants, they can always write simd in c/c++ and compile into wasm. The purpose of this library is to make it easy for web programmers to speedup their js code.
 
 ## How to setup
 
@@ -26,7 +29,7 @@ We are going to use WebAssembly Threads and SIMD to build a Javascript parallel 
 * ### Compilation
 
   * Basic compile: emsdk/upstream/emscripten/emcc fileToComile.c.
-  * -O1, -O2, -O3 to set optimize level.
+  * -O1, -O2, -O3 to set optimize level. NOTE: to use -O3 we need to explicitly -s EXPORTED_FUNCTIONS="['_malloc']". It's a compiler problem.
   * -s EXPORTED_FUNCTIONS='["_function_name"]' to expose the function in .c . Or in C include <emscripten.h> and use EMSCRIPTEN_KEEPALIVE as an annotation before function definition to identify the function as an export function
   * -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' to enable the use of ccal and cwrap.
   * Example: emcc test.c -O0 -msimd128 -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
@@ -43,6 +46,10 @@ We are going to use WebAssembly Threads and SIMD to build a Javascript parallel 
 ## Porblem faced
 
 * Can't include immintrin.h because the code assume it's going to use x86. However, wasm is not using x86. [Learn more](https://github.com/emscripten-core/emscripten-fastcomp-clang/issues/29) In conclusion, wasm can't use system specific instrinisc which make sense. Thus, we can only use either SIMD vector extension or wasm_simd.h as discribe here(https://emscripten.org/docs/porting/simd.html#porting-simd-code-targeting-asm-js). We are going to explore the Porting SIMD code targeting WebAssembly option. The Porting SIMD code targeting asm.js seems like a bad idea since the speed is going to be bad, which decrease the meaning of using simd and also it's widely recognized as a bad idea by the community. There are two path for using WebAssembly optino. The first one is using SIMD vector extension. The second one is using wasm_sim128.h. We are going to explore both of them in other examples.
+
+## Benchmark 
+
+* Check out benchmark.js in the simd folder
 
 ## Information
 * [Useful tutorial](https://marcoselvatici.github.io/WASM_tutorial/index.html#WASM_workflow)
