@@ -22,6 +22,12 @@ function init_zero(arr) {
 	}
 }
 
+function init_random(arr){
+	for (let i = 0; i<arr.length; i++){
+		arr[i] = Math.floor(Math.random()*1000);
+	}
+}
+
 function check_array_add_correctness(a, b, c, length) {
 	for (let i = 0; i < length; i++) {
 		if (Math.abs(c[i] - b[i] - a[i]) > 0.01) {
@@ -36,6 +42,17 @@ function check_array_multiply_correctness(a, b, c, length) {
 	for (let i = 0; i < length; i++) {
 		if (Math.abs(c[i] - a[i]*b[i]) > 0.01) {
 			console.log(a[i] + " * " + b[i] + " = " + c[i]);
+			return false;
+		}
+	}
+	return true;
+}
+
+function check_array_sort_correctness(a, b, length){
+	a.sort(function(a, b){return a-b});
+	for (let i = 0; i < length; i++){
+		if(a[i]!=b[i]){
+			console.log(i);
 			return false;
 		}
 	}
@@ -138,6 +155,37 @@ function sim_int_aray_multiply_benchmark(length, iteration) {
 	console.info('Benchmark sim_int_aray_multiply_benchmark Execution time (hr): %ds', amount_time/iteration);
 }
 
+
+function sim_int_sort_array_benchmark(length, iteration){
+
+	let a = new Int32Array(length);
+
+	init_random(a);
+
+	let a_pointer = simd_operations.simd_new_int_array(a);
+
+	let amount_time = 0;
+
+	for (let i = 0; i < iteration; i++) {
+		let hrstart = process.hrtime();
+
+		simd_operations.sim_sort_int_array(a_pointer, length);
+
+		let hrend = process.hrtime(hrstart);
+		let b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer, length);
+		amount_time += hrend[0] + hrend[1] / 1000000;
+
+		if (check_array_sort_correctness(a, b, length)) {
+			console.info('Benchmark sim_int_sort_array_benchmark Execution time (hr): %ds', hrend[0], hrend[1] / 1000000);
+		}else {
+			console.log("Benchmark sim_int_sort_array_benchmark calculation error");
+		}
+	}
+
+	console.info('Benchmark sim_int_sort_array_benchmark Execution time (hr): %ds', amount_time/iteration);
+
+}
+
 /***************** Baseline benchmarks *********************************************************/
 
 function baseline_int_aray_add_benchmark(length, iteration) {
@@ -215,6 +263,35 @@ function baseline_int_aray_multiply_benchmark(length, iteration) {
 	console.info('Baseline sim_int_aray_multiply_benchmark Execution time (hr): %ds', amount_time/iteration);
 }
 
+function baseline_int_aray_sort_benchmark(length, iteration) {
+
+	let a = new Int32Array(length);
+
+	init_random(a);
+
+	let amount_time = 0;
+	for (let i = 0; i < iteration; i++) {
+		let hrstart = process.hrtime();
+
+		for (let i = 0; i < length; i++) {
+			for (let j = 0; j < length; j++) {
+				if (a[j] > a[j + 1]) {
+					let tmp = a[j];
+					a[j] = a[j + 1];
+					a[j + 1] = tmp;
+				}
+			}
+		}
+		let hrend = process.hrtime(hrstart);
+		amount_time += hrend[0] + hrend[1] / 1000000;
+
+		console.info('Baseline baseline_int_aray_sort_benchmark Execution time (hr): %ds', hrend[0], hrend[1] / 1000000);
+	}
+
+	console.info('Baseline baseline_int_aray_sort_benchmark Execution time (hr): %ds', amount_time/iteration);
+}
+
+
 /***************** Compare benchmarks *********************************************************/
 
 function int_add_arry_benchmark() {
@@ -238,8 +315,17 @@ function int_multiply_arry_benchmark() {
 	baseline_int_aray_multiply_benchmark(length, iteration);
 }
 
+
+function int_sort_array_benchmark(){
+	let length = 10000;
+	let iteration = 10;
+	sim_int_sort_array_benchmark(length, iteration);
+	baseline_int_aray_sort_benchmark(length, iteration);
+}
+
 em_module.onRuntimeInitialized = () => {
-	int_add_arry_benchmark();
-	float_add_arry_benchmark();
-	int_multiply_arry_benchmark();
+	//int_add_arry_benchmark();
+	//float_add_arry_benchmark();
+	//int_multiply_arry_benchmark();
+	int_sort_array_benchmark();
 }

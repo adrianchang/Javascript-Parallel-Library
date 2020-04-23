@@ -4,6 +4,7 @@ const em_module = require('./a.out.js');
 const simd_add_int = em_module.cwrap('simd_add_int', 'null', ['number', 'number', 'number', 'number']);
 const simd_add_float = em_module.cwrap('simd_add_float', 'null', ['number', 'number', 'number', 'number']);
 const simd_multiply_int = em_module.cwrap('simd_multiply_int', 'null', ['number', 'number', 'number', 'number']);
+const simd_sort_int = em_module.cwrap('simd_sort_int', 'null', ['number', 'number']);
 
 /***************** simd datatype basic function *********************************************************/
 
@@ -78,6 +79,10 @@ function sim_multiply_int_aray(a_pointer, b_pointer, c_pointer, length) {
   simd_multiply_int(a_pointer, b_pointer, c_pointer, length);
 }
 
+function sim_sort_int_array(a_pointer, length){
+  simd_sort_int(a_pointer, length);
+}
+
 module.exports = {
   simd_new_int_array : simd_new_int_array,
   simd_new_float_array : simd_new_float_array,
@@ -86,5 +91,6 @@ module.exports = {
   simd_float_pointer_to_float32_arr : simd_float_pointer_to_float32_arr,
   sim_add_int_aray : sim_add_int_aray,
   sim_add_float_aray : sim_add_float_aray,
-  sim_multiply_int_aray : sim_multiply_int_aray
+  sim_multiply_int_aray : sim_multiply_int_aray,
+  sim_sort_int_array : sim_sort_int_array
 }
