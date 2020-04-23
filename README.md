@@ -5,17 +5,21 @@
 We are going to use WebAssembly Threads and SIMD to build a Javascript parallel library so that users can fasten their program by simply calling our functions. 
 
 * Support functionalities:
-  * SIMD primitives
+  * SIMD primitives(array addition, multiply ...)
 * Example usage:
   * TBD
-
-## Design rationale 
-
-The reason why are implementing our own simd primitives such as array addition in js rather than provide simd operation wrapper is that writing explicit simd in js is not a good idea. The web programmer don't know about the underlying system that the code is running on. Thus, they don't know about the cache size etc... So it's not a good idea to write explicit simd code in js. Also, if one really wants, they can always write simd in c/c++ and compile into wasm. The purpose of this library is to make it easy for web programmers to speedup their js code.
 
 ## How to setup
 
 * [Intsall emcc](https://emscripten.org/docs/getting_started/downloads.html#sdk-download-and-install)
+
+## Design rationale 
+
+The reason why we are implementing our own simd primitives such as array addition in js rather than provide simd operation wrapper is that writing explicit simd in js is not a good idea. The web programmer don't know about the underlying system that the code is running on. Thus, they don't know about the cache size etc... So it's not a good idea to write explicit simd code in js. Also, if one really wants, they can always write simd in c/c++ and compile into wasm. The purpose of this library is to make it easy for web programmers to speedup their js code.
+
+## Architecture 
+
+The simd operations are all in the simd.js right now. It contains data type converting helper function and actual simd operation. For usage example, please look at benchmark.js
 
 ## For developers
 * ### Webassembly intro
@@ -32,7 +36,9 @@ The reason why are implementing our own simd primitives such as array addition i
   * -O1, -O2, -O3 to set optimize level. NOTE: to use -O3 we need to explicitly -s EXPORTED_FUNCTIONS="['_malloc']". It's a compiler problem.
   * -s EXPORTED_FUNCTIONS='["_function_name"]' to expose the function in .c . Or in C include <emscripten.h> and use EMSCRIPTEN_KEEPALIVE as an annotation before function definition to identify the function as an export function
   * -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' to enable the use of ccal and cwrap.
-  * Example: emcc test.c -O0 -msimd128 -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
+  * -s TOTAL_MEMORY=1000MB to set the allowed total memory
+  * -s ALLOW_MEMORY_GROWTH to allow memory to grow if exceed limit
+  * Example: emcc operation.c -O3 -msimd128 -s TOTAL_MEMORY=1000MB -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_FUNCTIONS="['_malloc']" -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
 
 * ### Running js
 
@@ -49,7 +55,10 @@ The reason why are implementing our own simd primitives such as array addition i
 
 ## Benchmark 
 
-* Check out benchmark.js in the simd folder
+Check out benchmark.js in the simd folder. The below is the speedup achieved.
+32x for addition of float array of size 100000
+42x for multiply of int array of size 10000n
+2x for addition of int array of size 10000000
 
 ## Information
 * [Useful tutorial](https://marcoselvatici.github.io/WASM_tutorial/index.html#WASM_workflow)
