@@ -8,6 +8,10 @@ const simd_sub_float = em_module.cwrap('simd_sub_float', 'null', ['number', 'num
 const simd_multiply_int = em_module.cwrap('simd_multiply_int', 'null', ['number', 'number', 'number', 'number']);
 const simd_multiply_float = em_module.cwrap('simd_multiply_float', 'null', ['number', 'number', 'number', 'number']);
 const simd_div_float = em_module.cwrap('simd_div_float', 'null', ['number', 'number', 'number', 'number']);
+const simd_min_int = em_module.cwrap('simd_min_int', 'null', ['number', 'number', 'number', 'number']);
+const simd_min_float = em_module.cwrap('simd_min_float', 'null', ['number', 'number', 'number', 'number']);
+const simd_max_int = em_module.cwrap('simd_max_int', 'null', ['number', 'number', 'number', 'number']);
+const simd_max_float = em_module.cwrap('simd_max_float', 'null', ['number', 'number', 'number', 'number']);
 const simd_sort_int = em_module.cwrap('simd_sort_int', 'null', ['number', 'number']);
 
 /***************** simd datatype basic function *********************************************************/
@@ -111,6 +115,34 @@ function sim_div_float_array(a_pointer, b_pointer, c_pointer, length){
   simd_div_float(a_pointer, b_pointer, c_pointer, length);
 }
 
+/* Parameter: a b c pointer in the shared heap space
+   Return: void
+*/
+function sim_min_int_array(a_pointer, b_pointer, c_pointer, length) {
+  simd_min_int(a_pointer, b_pointer, c_pointer, length);
+}
+
+/* Parameter: a b c pointer in the shared heap space
+   Return: void
+*/
+function sim_min_float_array(a_pointer, b_pointer, c_pointer, length) {
+  simd_min_float(a_pointer, b_pointer, c_pointer, length);
+}
+
+/* Parameter: a b c pointer in the shared heap space
+   Return: void
+*/
+function sim_max_int_array(a_pointer, b_pointer, c_pointer, length) {
+  simd_max_int(a_pointer, b_pointer, c_pointer, length);
+}
+
+/* Parameter: a b c pointer in the shared heap space
+   Return: void
+*/
+function sim_max_float_array(a_pointer, b_pointer, c_pointer, length) {
+  simd_max_float(a_pointer, b_pointer, c_pointer, length);
+}
+
 function sim_sort_int_array(a_pointer, length){
   simd_sort_int(a_pointer, length);
 }
@@ -128,5 +160,9 @@ module.exports = {
   sim_multiply_int_array : sim_multiply_int_array,
   sim_multiply_float_array : sim_multiply_float_array,
   sim_div_float_array : sim_div_float_array,
+  sim_min_int_array : sim_min_int_array,
+  sim_min_float_array : sim_min_float_array,
+  sim_max_int_array : sim_max_int_array,
+  sim_max_float_array : sim_max_float_array,
   sim_sort_int_array : sim_sort_int_array,
 }
