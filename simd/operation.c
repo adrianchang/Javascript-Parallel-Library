@@ -58,6 +58,15 @@ void EMSCRIPTEN_KEEPALIVE simd_multiply_float(float* in_a, float* in_b, float* o
   }
 }
 
+void EMSCRIPTEN_KEEPALIVE simd_div_float(float* in_a, float* in_b, float* out, int size) {
+  for (int i = 0; i < size; i+=4){
+    v128_t a = wasm_v128_load(&in_a[i]);
+    v128_t b = wasm_v128_load(&in_b[i]);
+    v128_t div = wasm_f32x4_div(a, b);
+    wasm_v128_store(&out[i], div);
+  }
+}
+
 void EMSCRIPTEN_KEEPALIVE simd_compare_and_swap_int(int* in, int size){
 
   for (int i = 0; i < size; i+=4){

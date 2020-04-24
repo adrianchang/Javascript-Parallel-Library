@@ -22,10 +22,16 @@ function init_zero(arr) {
 	}
 }
 
-function init_random(arr){
+function init_random_int(arr){
 	for (let i = 0; i<arr.length; i++){
 		arr[i] = Math.floor(Math.random()*1000);
 	}
+}
+
+function init_random_float(arr){
+	for (let i = 0; i<arr.length; i++){
+		arr[i] = Math.random()*1000;
+	}	
 }
 
 function check_array_add_correctness(a, b, c, length) {
@@ -52,6 +58,16 @@ function check_array_multiply_correctness(a, b, c, length) {
 	for (let i = 0; i < length; i++) {
 		if (Math.abs(c[i] - a[i]*b[i]) > 0.01) {
 			console.log(a[i] + " * " + b[i] + " = " + c[i]);
+			return false;
+		}
+	}
+	return true;
+}
+
+function check_array_div_correctness(a, b, c, length) {
+	for (let i = 0; i < length; i++) {
+		if (Math.abs(c[i] - a[i]/b[i]) > 0.01) {
+			console.log(a[i] + " / " + b[i] + " = " + c[i]);
 			return false;
 		}
 	}
@@ -260,12 +276,45 @@ function sim_float_array_multiply_benchmark(length, iteration) {
 	console.info('Benchmark sim_float_array_multiply_benchmark Execution time (hr): %ds', amount_time/iteration);
 }
 
+function sim_float_array_div_benchmark(length, iteration) {
+	let a = new Float32Array(length);
+	let b = new Float32Array(length);	
+	let c = new Float32Array(length);	
+
+	init_random_float(a);
+	init_random_float(b);
+
+	let a_pointer = simd_operations.simd_new_float_array(a);
+	let b_pointer = simd_operations.simd_new_float_array(b);
+	let c_pointer = simd_operations.simd_new_float_array(c);
+
+	let amount_time = 0;
+	for (let i = 0; i < iteration; i++) {
+
+		let hrstart = process.hrtime();
+
+		simd_operations.sim_div_float_array(a_pointer, b_pointer, c_pointer, length);
+
+		let hrend = process.hrtime(hrstart);
+		c = simd_operations.simd_float_pointer_to_float32_arr(c_pointer, length);
+		amount_time += hrend[0] + hrend[1] / 1000000;
+
+		if (check_array_div_correctness(a, b, c, length)) {
+			console.info('Benchmark sim_float_array_div_benchmark Execution time (hr): %ds', hrend[0], hrend[1] / 1000000);
+		}else {
+			console.log("Benchmark sim_float_array_div_benchmark calculation error");
+		}
+	}
+
+	console.info('Benchmark sim_float_array_div_benchmark Execution time (hr): %ds', amount_time/iteration);
+}
+
 
 function sim_int_sort_array_benchmark(length, iteration){
 
 	let a = new Int32Array(length);
 
-	init_random(a);
+	init_random_int(a);
 
 	let a_pointer = simd_operations.simd_new_int_array(a);
 
@@ -444,11 +493,36 @@ function baseline_float_array_multiply_benchmark(length, iteration) {
 	console.info('Baseline baseline_float_array_multiply_benchmark Execution time (hr): %ds', amount_time/iteration);
 }
 
+function baseline_float_array_div_benchmark(length, iteration) {
+	let a = new Float32Array(length);
+	let b = new Float32Array(length);	
+	let c = new Float32Array(length);	
+
+	init_random_float(a);
+	init_random_float(b);
+
+	let amount_time = 0;
+	for (let i = 0; i < iteration; i++) {
+		let hrstart = process.hrtime();
+
+		for (let j = 0; j < length; j++) {
+			c[j] = a[j] / b[j];
+		}
+
+		let hrend = process.hrtime(hrstart);
+		amount_time += hrend[0] + hrend[1] / 1000000;
+
+		console.info('Baseline baseline_float_array_div_benchmark Execution time (hr): %ds', hrend[0], hrend[1] / 1000000);
+	}
+
+	console.info('Baseline baseline_float_array_div_benchmark Execution time (hr): %ds', amount_time/iteration);
+}
+
 function baseline_int_array_sort_benchmark(length, iteration) {
 
 	let a = new Int32Array(length);
 
-	init_random(a);
+	init_random_int(a);
 
 	let amount_time = 0;
 	for (let i = 0; i < iteration; i++) {
@@ -518,6 +592,14 @@ function float_multiply_array_benchmark(){
 }
 
 
+function float_div_array_benchmark(){
+	let length = 1000;
+	let iteration = 10;
+	sim_float_array_div_benchmark(length, iteration);
+	baseline_float_array_div_benchmark(length, iteration);
+}
+
+
 function int_sort_array_benchmark(){
 	let length = 10000;
 	let iteration = 10;
@@ -526,11 +608,12 @@ function int_sort_array_benchmark(){
 }
 
 em_module.onRuntimeInitialized = () => {
-	int_add_array_benchmark();
-	float_add_array_benchmark();
-	int_sub_array_benchmark();
-	float_sub_array_benchmark();
-	int_multiply_array_benchmark();
-	float_multiply_array_benchmark();
-	int_sort_array_benchmark();
+	// int_add_array_benchmark();
+	// float_add_array_benchmark();
+	// int_sub_array_benchmark();
+	// float_sub_array_benchmark();
+	// int_multiply_array_benchmark();
+	// float_multiply_array_benchmark();
+	float_div_array_benchmark();
+	// int_sort_array_benchmark();
 }

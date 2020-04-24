@@ -7,6 +7,7 @@ const simd_sub_int = em_module.cwrap('simd_sub_int', 'null', ['number', 'number'
 const simd_sub_float = em_module.cwrap('simd_sub_float', 'null', ['number', 'number', 'number', 'number']);
 const simd_multiply_int = em_module.cwrap('simd_multiply_int', 'null', ['number', 'number', 'number', 'number']);
 const simd_multiply_float = em_module.cwrap('simd_multiply_float', 'null', ['number', 'number', 'number', 'number']);
+const simd_div_float = em_module.cwrap('simd_div_float', 'null', ['number', 'number', 'number', 'number']);
 const simd_sort_int = em_module.cwrap('simd_sort_int', 'null', ['number', 'number']);
 
 /***************** simd datatype basic function *********************************************************/
@@ -103,6 +104,13 @@ function sim_multiply_float_array(a_pointer, b_pointer, c_pointer, length){
   simd_multiply_float(a_pointer, b_pointer, c_pointer, length);
 }
 
+/* Parameter: a b c pointer in the shared heap space
+   Return: void
+*/
+function sim_div_float_array(a_pointer, b_pointer, c_pointer, length){
+  simd_div_float(a_pointer, b_pointer, c_pointer, length);
+}
+
 function sim_sort_int_array(a_pointer, length){
   simd_sort_int(a_pointer, length);
 }
@@ -119,5 +127,6 @@ module.exports = {
   sim_sub_float_array : sim_sub_float_array,
   sim_multiply_int_array : sim_multiply_int_array,
   sim_multiply_float_array : sim_multiply_float_array,
+  sim_div_float_array : sim_div_float_array,
   sim_sort_int_array : sim_sort_int_array,
 }
