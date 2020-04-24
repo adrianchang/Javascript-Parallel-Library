@@ -891,16 +891,16 @@ function int_sort_array_benchmark(){
 }
 
 em_module.onRuntimeInitialized = () => {
-	int_add_array_benchmark();
-	float_add_array_benchmark();
-	int_sub_array_benchmark();
-	float_sub_array_benchmark();
-	int_multiply_array_benchmark();
-	float_multiply_array_benchmark();
-	// float_div_array_benchmark();
-	int_min_array_benchmark();
-	float_min_array_benchmark();
-	int_max_array_benchmark();
-	float_max_array_benchmark();
-	int_sort_array_benchmark();
+	// int_add_array_benchmark();
+	// float_add_array_benchmark();
+	// int_sub_array_benchmark();
+	// float_sub_array_benchmark();
+	// int_multiply_array_benchmark();
+	// float_multiply_array_benchmark();
+	float_div_array_benchmark();
+	// int_min_array_benchmark();
+	// float_min_array_benchmark();
+	// int_max_array_benchmark();
+	// float_max_array_benchmark();
+	// int_sort_array_benchmark();
 }
