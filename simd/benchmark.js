@@ -475,7 +475,8 @@ function sim_int_sort_array_benchmark(length, iteration){
 	for (let i = 0; i < iteration; i++) {
 		let hrstart = process.hrtime();
 
-		simd_operations.sim_sort_int_array(a_pointer, length);
+		//simd_operations.simd_sort_int_vecotr(a_pointer, length);
+		simd_operations.simd_comb_sort_int(a_pointer, length);
 
 		let hrend = process.hrtime(hrstart);
 		let b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer, length);
@@ -890,17 +891,274 @@ function int_sort_array_benchmark(){
 	baseline_int_array_sort_benchmark(length, iteration);
 }
 
+function checkIdentical(arr, origin, length) {
+	for(let i = 0; i < length; i++) {
+		// console.log(origin[i] + " " + arr[i]);
+		if(origin[i] != arr[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+//Below are all tests
+
+function simd_int_pointer_to_int32_arr_test() {
+	let msg = "not sorted";
+	let length = 4;
+	let a = new Int32Array(length);
+	let b = new Int32Array(length);
+	let ans = [1, 2, 3, 4];
+
+	a = [1,2,3,4];
+	let a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [2,1,3,4];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [3,1,2,4];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [1,3,2,4];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [2,3,1,4];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [3,2,1,4];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [3,2,4,1];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [2,3,4,1];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [4,3,2,1];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [3,4,2,1]
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [2,4,3,1];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [4,2,3,1];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [4,1,3,2];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [1,4,3,2];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [3,4,1,2];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [4,3,1,2];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [1,3,4,2];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [3,1,4,2];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [2,1,4,3];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [1,2,4,3];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [4,2,1,3];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [2,4,1,3];
+	 a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [1,4,2,3];
+	a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	a = [4,1,2,3];
+	a_pointer = simd_operations.simd_new_int_array(a);
+	simd_operations.simd_sort_int_vecotr(a_pointer, length);
+	b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, b, length)) {
+		console.log(msg);
+	}
+	// console.log(checkIdentical(ans, b, length));
+}
+
+function simd_compswap_int_test() {
+	let length = 4;
+	let a = new Int32Array(length);
+	let b = new Int32Array(length);
+	a = [2, 3, 6, 1];
+	b = [-1, 1, 3, 3];
+	let a_pointer = simd_operations.simd_new_int_array(a);
+	let b_pointer = simd_operations.simd_new_int_array(b);
+
+	simd_operations.simd_compswap_int(a_pointer, b_pointer);
+
+	a = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	b = simd_operations.simd_int_pointer_to_int32_arr(b_pointer);
+	if (!checkIdentical(a, [-1, 1, 3, 1], 4)) {
+		console.log("simd_compswap_int error a");
+	}
+	if (!checkIdentical(b, [2, 3, 6, 3], 4)) {
+		console.log("simd_compswap_int error b");
+	}
+}
+
+function simd_skew_compswap_int_test() {
+	let length = 4;
+	let a = new Int32Array(length);
+	let b = new Int32Array(length);
+	a = [2, 3, 6, 1];
+	b = [-1, 1, 3, 3];
+	let a_pointer = simd_operations.simd_new_int_array(a);
+	let b_pointer = simd_operations.simd_new_int_array(b);
+
+	simd_operations.simd_skew_compswap_int(a_pointer, b_pointer);
+
+	a = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	b = simd_operations.simd_int_pointer_to_int32_arr(b_pointer);
+
+	if (!checkIdentical(a, [1, 3, 3, 1], 4)) {
+		console.log("simd_compswap_int error a");
+	}
+	if (!checkIdentical(b, [-1, 2, 3, 6], 4)) {
+		console.log("simd_compswap_int error b");
+	}
+}
+
+function simd_comb_sort_int() {
+	let length = 32;
+	let a = new Int32Array(length);
+	let ans = [1, 2, 3, 4, 3, 5, 6, 9, 10, 4, 2, 3, 4, 5, 6, 7, 8];
+
+	a = [1, 2, 3, 4, 3, 5, 6, 9, 10, 4, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 3, 5, 6, 9, 10, 4, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 3, 5, 6, 9, 10, 4, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 3, 5, 6, 9, 10, 4, 2, 3, 4, 5, 6, 7];
+	let a_pointer = simd_operations.simd_new_int_array(a);
+	console.log("start");
+	simd_operations.simd_comb_sort_int(a_pointer, length);
+	console.log("end");
+	a = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
+	if (!checkIdentical(ans, a, length)) {
+		console.log("simd_comb_sort_int no sorted ");
+	}
+}
+
 em_module.onRuntimeInitialized = () => {
+	//TODO add delete !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// int_add_array_benchmark();
 	// float_add_array_benchmark();
 	// int_sub_array_benchmark();
 	// float_sub_array_benchmark();
 	// int_multiply_array_benchmark();
 	// float_multiply_array_benchmark();
-	float_div_array_benchmark();
+	// float_div_array_benchmark();
 	// int_min_array_benchmark();
 	// float_min_array_benchmark();
 	// int_max_array_benchmark();
 	// float_max_array_benchmark();
-	// int_sort_array_benchmark();
+	int_sort_array_benchmark();
+
+ //Tests
+ // simd_int_pointer_to_int32_arr_test();
+ // simd_compswap_int_test();
+ // simd_skew_compswap_int_test();
+
+ // simd_comb_sort_int();
 }

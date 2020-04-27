@@ -13,6 +13,11 @@ const simd_min_float = em_module.cwrap('simd_min_float', 'null', ['number', 'num
 const simd_max_int = em_module.cwrap('simd_max_int', 'null', ['number', 'number', 'number', 'number']);
 const simd_max_float = em_module.cwrap('simd_max_float', 'null', ['number', 'number', 'number', 'number']);
 const simd_sort_int = em_module.cwrap('simd_sort_int', 'null', ['number', 'number']);
+const simd_sort_vecotr_int = em_module.cwrap('simd_int_vector_sort', 'null', ['number', 'number']);
+const simd_cmpswap_int = em_module.cwrap('simd_vector_cmpswap', 'null', ['number', 'number']);
+const simd_vector_skew_cmpswap = em_module.cwrap('simd_vector_skew_cmpswap', 'null', ['number', 'number']);
+const simd_comb_sort = em_module.cwrap('simd_comb_sort', 'null', ['number', 'number']);
+
 
 /***************** simd datatype basic function *********************************************************/
 
@@ -147,6 +152,22 @@ function sim_sort_int_array(a_pointer, length){
   simd_sort_int(a_pointer, length);
 }
 
+function simd_sort_int_vecotr(a_pointer, length){
+  simd_sort_vecotr_int(a_pointer, length);
+}
+
+function simd_compswap_int(a_pointer, b_pointer){
+  simd_cmpswap_int(a_pointer, b_pointer);
+}
+
+function simd_skew_compswap_int(a_pointer, b_pointer){
+  simd_vector_skew_cmpswap(a_pointer, b_pointer);
+}
+
+function simd_comb_sort_int(arr_pointer, length) {
+  simd_comb_sort(arr_pointer, length);
+}
+
 module.exports = {
   simd_new_int_array : simd_new_int_array,
   simd_new_float_array : simd_new_float_array,
@@ -165,4 +186,8 @@ module.exports = {
   sim_max_int_array : sim_max_int_array,
   sim_max_float_array : sim_max_float_array,
   sim_sort_int_array : sim_sort_int_array,
+  simd_sort_int_vecotr : simd_sort_int_vecotr,
+  simd_compswap_int : simd_compswap_int,
+  simd_skew_compswap_int : simd_skew_compswap_int,
+  simd_comb_sort_int : simd_comb_sort_int
 }
