@@ -205,12 +205,20 @@ bool EMSCRIPTEN_KEEPALIVE aa_vector_skew_cmpswap(v128_t* vector_a, v128_t* vecto
 void EMSCRIPTEN_KEEPALIVE simd_comb_sort(int* arr, int length){
   // Step one
   // Load input into array of vectors and sort every small vector.
-  int numVectors = length/4;
+  int numVectors = (length+15)/16*4;
   const float SHRINK_FACTOR = 1.3;
   int i = 0;
   v128_t* vectors = malloc(sizeof(v128_t) * numVectors);
   for (i = 0; i < numVectors; i++) {
-    vectors[i] = wasm_v128_load(&arr[i*4]);
+    if(i*4 + 4 > length){
+      int padded[4] = {__INT32_MAX__, __INT32_MAX__, __INT32_MAX__, __INT32_MAX__};
+      for(int j=0; j<length-i*4; j++){
+        padded[j] = arr[i*4+j];
+      }
+      vectors[i] = wasm_v128_load(padded);
+    } else {
+      vectors[i] = wasm_v128_load(&arr[i*4]);
+    }
     aa_vector_sort(&vectors[i], 4);
   }
 
@@ -333,11 +341,162 @@ void EMSCRIPTEN_KEEPALIVE simd_vector_skew_cmpswap(int* a, int* b){
 }
 
 
+void EMSCRIPTEN_KEEPALIVE simd_vector_merge(v128_t* vector_a_ptr, v128_t* vector_b_ptr){
+
+  v128_t vector_a = *vector_a_ptr;
+  v128_t vector_b = *vector_b_ptr;
+
+  // Step 1
+  v128_t comb_a = wasm_v32x4_shuffle(vector_a, vector_b, 0, 4, 1, 5);
+  v128_t comb_a_swap = wasm_v32x4_shuffle(comb_a, comb_a, 1, 0, 3, 2);
+  v128_t comb_b = wasm_v32x4_shuffle(vector_a, vector_b, 2, 6, 3, 7);
+  v128_t comb_b_swap = wasm_v32x4_shuffle(comb_b, comb_b, 1, 0, 3, 2);
+
+  v128_t compare = wasm_i32x4_lt(comb_a, comb_a_swap);
+  compare = wasm_i32x4_ne(wasm_i32x4_abs(compare), wasm_i32x4_make(1, 0, 1, 0));
+  vector_a = wasm_v128_bitselect(comb_a_swap, comb_a, compare);
+
+  compare = wasm_i32x4_lt(comb_b, comb_b_swap);
+  compare = wasm_i32x4_ne(wasm_i32x4_abs(compare), wasm_i32x4_make(1, 0, 1, 0));
+  vector_b = wasm_v128_bitselect(comb_b_swap, comb_b, compare); 
+
+  // Step 2
+  comb_a = wasm_v32x4_shuffle(vector_a, vector_b, 0, 1, 4, 5);
+  comb_a_swap = wasm_v32x4_shuffle(comb_a, comb_a, 0, 2, 1, 3);
+  comb_b = wasm_v32x4_shuffle(vector_a, vector_b, 2, 3, 6, 7);
+  comb_b_swap = wasm_v32x4_shuffle(comb_b, comb_b, 0, 2, 1, 3);
+
+  compare = wasm_i32x4_lt(comb_a, comb_a_swap);
+  compare = wasm_i32x4_ne(wasm_i32x4_abs(compare), wasm_i32x4_make(0, 1, 0, 0));
+  vector_a = wasm_v128_bitselect(comb_a_swap, comb_a, compare);
+
+  compare = wasm_i32x4_lt(comb_b, comb_b_swap);
+  compare = wasm_i32x4_ne(wasm_i32x4_abs(compare), wasm_i32x4_make(0, 1, 0, 0));
+  vector_b = wasm_v128_bitselect(comb_b_swap, comb_b, compare);
+
+  // Step 3
+  comb_a = wasm_v32x4_shuffle(vector_a, vector_b, 0, 1, 4, 2);
+  comb_a_swap = wasm_v32x4_shuffle(vector_a, vector_b, 0, 4, 1, 5);
+  comb_b = wasm_v32x4_shuffle(vector_a, vector_b, 2, 3, 6, 7);
+  comb_b_swap = wasm_v32x4_shuffle(vector_a, vector_b, 5, 6, 3, 7);  
+
+  compare = wasm_i32x4_lt(comb_a, comb_a_swap);
+  compare = wasm_i32x4_ne(wasm_i32x4_abs(compare), wasm_i32x4_make(0, 1, 0, 1));
+  vector_a = wasm_v128_bitselect(comb_a_swap, comb_a, compare); 
+
+  compare = wasm_i32x4_lt(comb_b, comb_b_swap);
+  compare = wasm_i32x4_ne(wasm_i32x4_abs(compare), wasm_i32x4_make(0, 1, 0, 0));
+  vector_b = wasm_v128_bitselect(comb_b_swap, comb_b, compare);
+
+  *vector_a_ptr = vector_a;
+  *vector_b_ptr = vector_b;
+
+  // wasm_v128_store(a, vector_a);
+  // wasm_v128_store(b, vector_b);
+
+  // printf("a: ");
+  // for (int i = 0; i < 4; i++) {
+  //   printf("%d ", a[i]);
+  // }
+  // printf("\n");
+
+  // printf("b: ");
+  // for (int i = 0; i < 4; i++) {
+  //   printf("%d ", b[i]);
+  // }
+  // printf("\n");
+}
 
 
+void EMSCRIPTEN_KEEPALIVE simd_merge_sorted_array(int* a, int* b, int a_len, int b_len, int* mergedArray){
+
+  v128_t vMin = wasm_v128_load(a);
+  v128_t vMax = wasm_v128_load(b);
+
+  int aPos = 4;
+  int bPos = 4;
+  int mergedArrayPos = 0;
+
+  while(aPos < a_len && bPos < b_len){
+
+    simd_vector_merge(&vMin, &vMax);
+    wasm_v128_store(mergedArray+mergedArrayPos, vMin);
+    mergedArrayPos += 4;
+
+    if(a[aPos] < b[bPos]){
+      vMin = wasm_v128_load(a+aPos);
+      aPos += 4;
+    } else {
+      vMin = wasm_v128_load(b+bPos);
+      bPos += 4;
+    }
+
+  }
+
+  while(aPos < a_len){
+    simd_vector_merge(&vMin, &vMax);
+    wasm_v128_store(mergedArray+mergedArrayPos, vMin);
+    mergedArrayPos += 4;
+    vMin = wasm_v128_load(a+aPos);
+    aPos += 4;
+  }
+
+  while(bPos < b_len){
+    simd_vector_merge(&vMin, &vMax);
+    wasm_v128_store(mergedArray+mergedArrayPos, vMin);
+    mergedArrayPos += 4;
+    vMin = wasm_v128_load(b+bPos);
+    bPos += 4;
+  }
+
+  simd_vector_merge(&vMin, &vMax);
+  wasm_v128_store(mergedArray+mergedArrayPos, vMin);
+  wasm_v128_store(mergedArray+mergedArrayPos+4, vMax);
+}
 
 
+void EMSCRIPTEN_KEEPALIVE simd_merge_sort(int* arr, int length, int block_size){
 
+  int merge_length = block_size;
+  int out_length = block_size * 2;
+  int* tmp_ptr;
+
+  int* sortedArray = malloc(sizeof(int) * length);
+
+  while(out_length <= length){
+    for(int i=0; i<length; i+=out_length){
+      
+      int *first_array = arr+i;
+      int *second_array = arr+i+merge_length;
+      int first_array_len = merge_length;
+      int second_array_len = merge_length > (length-i) ? (length-i) : merge_length;
+
+      simd_merge_sorted_array(first_array, second_array, merge_length, merge_length, sortedArray+i);
+    }
+
+    merge_length *= 2;
+    out_length *= 2;
+    tmp_ptr = arr;
+    arr = sortedArray;
+    sortedArray = tmp_ptr;
+  }
+}
+
+void EMSCRIPTEN_KEEPALIVE simd_aa_sort(int* arr, int length){
+
+  const int L1_CACAE_SIZE = 65536;
+
+  if(length > L1_CACAE_SIZE){
+    for(int i=0; i<length; i+=L1_CACAE_SIZE){
+      int block_size = L1_CACAE_SIZE > (length-i) ? (length-i) : L1_CACAE_SIZE;
+      simd_comb_sort(arr+i, block_size);
+    }
+    simd_merge_sort(arr, length, L1_CACAE_SIZE);
+  } else {
+     simd_comb_sort(arr, length);
+  }
+
+}
 
 
 

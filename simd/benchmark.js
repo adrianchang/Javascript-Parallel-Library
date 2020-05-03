@@ -467,7 +467,6 @@ function sim_int_sort_array_benchmark(length, iteration){
 	let a = new Int32Array(length);
 
 	init_random_int(a);
-
 	let a_pointer = simd_operations.simd_new_int_array(a);
 
 	let amount_time = 0;
@@ -475,8 +474,7 @@ function sim_int_sort_array_benchmark(length, iteration){
 	for (let i = 0; i < iteration; i++) {
 		let hrstart = process.hrtime();
 
-		//simd_operations.simd_sort_int_vecotr(a_pointer, length);
-		simd_operations.simd_comb_sort_int(a_pointer, length);
+		simd_operations.simd_aa_sort_int(a_pointer, length);
 
 		let hrend = process.hrtime(hrstart);
 		let b = simd_operations.simd_int_pointer_to_int32_arr(a_pointer, length);
@@ -779,21 +777,12 @@ function baseline_int_array_sort_benchmark(length, iteration) {
 
 	let a = new Int32Array(length);
 
-	init_random_int(a);
-
 	let amount_time = 0;
 	for (let i = 0; i < iteration; i++) {
+		init_random_int(a);
 		let hrstart = process.hrtime();
 
-		for (let i = 0; i < length; i++) {
-			for (let j = 0; j < length; j++) {
-				if (a[j] > a[j + 1]) {
-					let tmp = a[j];
-					a[j] = a[j + 1];
-					a[j + 1] = tmp;
-				}
-			}
-		}
+		a.sort();
 		let hrend = process.hrtime(hrstart);
 		amount_time += hrend[0] + hrend[1] / 1000000;
 
@@ -885,7 +874,7 @@ function float_max_array_benchmark() {
 }
 
 function int_sort_array_benchmark(){
-	let length = 10000;
+	let length = Math.pow(2, 20);
 	let iteration = 10;
 	sim_int_sort_array_benchmark(length, iteration);
 	baseline_int_array_sort_benchmark(length, iteration);
@@ -1124,21 +1113,6 @@ function simd_skew_compswap_int_test() {
 	}
 }
 
-function simd_comb_sort_int() {
-	let length = 32;
-	let a = new Int32Array(length);
-	let ans = [1, 2, 3, 4, 3, 5, 6, 9, 10, 4, 2, 3, 4, 5, 6, 7, 8];
-
-	a = [1, 2, 3, 4, 3, 5, 6, 9, 10, 4, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 3, 5, 6, 9, 10, 4, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 3, 5, 6, 9, 10, 4, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 3, 5, 6, 9, 10, 4, 2, 3, 4, 5, 6, 7];
-	let a_pointer = simd_operations.simd_new_int_array(a);
-	console.log("start");
-	simd_operations.simd_comb_sort_int(a_pointer, length);
-	console.log("end");
-	a = simd_operations.simd_int_pointer_to_int32_arr(a_pointer);
-	if (!checkIdentical(ans, a, length)) {
-		console.log("simd_comb_sort_int no sorted ");
-	}
-}
 
 em_module.onRuntimeInitialized = () => {
 	//TODO add delete !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1156,9 +1130,10 @@ em_module.onRuntimeInitialized = () => {
 	int_sort_array_benchmark();
 
  //Tests
- // simd_int_pointer_to_int32_arr_test();
- // simd_compswap_int_test();
- // simd_skew_compswap_int_test();
+//  simd_int_pointer_to_int32_arr_test();
+//  simd_compswap_int_test();
+//  simd_skew_compswap_int_test();
 
- // simd_comb_sort_int();
+//  simd_comb_sort_int();
+
 }
