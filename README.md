@@ -38,12 +38,15 @@ The simd operations are all in the simd.js right now. It contains data type conv
   * -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' to enable the use of ccal and cwrap.
   * -s TOTAL_MEMORY=1000MB to set the allowed total memory
   * -s ALLOW_MEMORY_GROWTH to allow memory to grow if exceed limit
-  * Example: emcc operation.c -O3 -msimd128 -s TOTAL_MEMORY=1000MB -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_FUNCTIONS="['_malloc']" -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
+  * -s USE_PTHREADS=1 to allow pthread
+  * -s PTHREAD_POOL_SIZE=thread_num to set number of threads, for web security problem, maximum = 20
+  * Example: emcc operation.c -O3 -msimd128 -s TOTAL_MEMORY=1000MB -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_FUNCTIONS="['_malloc']" -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=8
 
 * ### Running js
 
   * Run it with tag --experimental-wasm-simd. Otherwise, errors will occur. 
-  * Example: node --experimental-wasm-simd test.js
+  * Run it with tag --experimental-wasm-threads to allow pthread.
+  * Example: node --experimental-wasm-simd --experimental-wasm-threads test.js
 
 * ### Things to notice
 
