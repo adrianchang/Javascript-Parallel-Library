@@ -95,7 +95,7 @@ function check_array_max_correctness(a, b, c, length) {
 }
 
 function check_array_sort_correctness(a, b, length){
-	a.sort(function(a, b){return a-b});
+	a.sort();
 	for (let i = 0; i < length; i++){
 		if(a[i]!=b[i]){
 			console.log(i);
@@ -468,10 +468,12 @@ function sim_int_sort_array_benchmark(length, iteration){
 
 	init_random_int(a);
 	let a_pointer = simd_operations.simd_new_int_array(a);
-
+	
 	let amount_time = 0;
 
 	for (let i = 0; i < iteration; i++) {
+
+
 		let hrstart = process.hrtime();
 
 		simd_operations.simd_aa_sort_int(a_pointer, length);
@@ -783,6 +785,7 @@ function baseline_int_array_sort_benchmark(length, iteration) {
 		let hrstart = process.hrtime();
 
 		a.sort();
+		//a.sort(function(a, b){return a-b});
 		let hrend = process.hrtime(hrstart);
 		amount_time += hrend[0] + hrend[1] / 1000000;
 

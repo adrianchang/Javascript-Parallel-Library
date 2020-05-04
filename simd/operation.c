@@ -2,6 +2,10 @@
 #include <emscripten.h>
 #include <stdio.h> 
 #include <stdlib.h>
+#include <pthread.h>
+
+#define MAX_THREAD 8
+#define MIN_BLOCK_SIZE 65536
 
 void EMSCRIPTEN_KEEPALIVE simd_add_int (int* a, int* b, int* result, unsigned int length) {
   for (int i = 0; i < length; i += 4) {
@@ -460,40 +464,78 @@ void EMSCRIPTEN_KEEPALIVE simd_merge_sort(int* arr, int length, int block_size){
   int merge_length = block_size;
   int out_length = block_size * 2;
   int* tmp_ptr;
+  int* origin_arr_ptr = arr;
 
   int* sortedArray = malloc(sizeof(int) * length);
 
   while(out_length <= length){
     for(int i=0; i<length; i+=out_length){
       
-      int *first_array = arr+i;
-      int *second_array = arr+i+merge_length;
       int first_array_len = merge_length;
       int second_array_len = merge_length > (length-i) ? (length-i) : merge_length;
+      int *first_array = arr+i;
+      int *second_array = arr+i+first_array_len;
 
-      simd_merge_sorted_array(first_array, second_array, merge_length, merge_length, sortedArray+i);
+      simd_merge_sorted_array(first_array, second_array, first_array_len, second_array_len, sortedArray+i);
     }
 
     merge_length *= 2;
     out_length *= 2;
     tmp_ptr = arr;
     arr = sortedArray;
-    sortedArray = tmp_ptr;
+    sortedArray = tmp_ptr;    
   }
+
+  if(arr!=origin_arr_ptr){
+    for(int i=0; i<length; i+=4){
+      wasm_v128_store(origin_arr_ptr+i, wasm_v128_load(arr+i));
+    }
+    free(arr);
+  } else {
+    free(sortedArray);
+  }
+}
+
+typedef struct arrInfo {
+
+  int * arr;
+  int length;
+
+} arrInfo;
+
+void* comb_sort_thread(void* arg) {
+
+  arrInfo *arr_info = (arrInfo*) arg;
+
+  int *arr = arr_info->arr;
+  int length = arr_info->length;
+
+  simd_comb_sort(arr, length);
+  return arg;
 }
 
 void EMSCRIPTEN_KEEPALIVE simd_aa_sort(int* arr, int length){
 
-  const int L1_CACAE_SIZE = 65536;
+  if(length > MIN_BLOCK_SIZE){
+    pthread_t threads[MAX_THREAD];
+    int block_size = (length + MAX_THREAD - 1) / MAX_THREAD;
 
-  if(length > L1_CACAE_SIZE){
-    for(int i=0; i<length; i+=L1_CACAE_SIZE){
-      int block_size = L1_CACAE_SIZE > (length-i) ? (length-i) : L1_CACAE_SIZE;
-      simd_comb_sort(arr+i, block_size);
+    for (int i = 0; i < MAX_THREAD; i++){
+      arrInfo *arr_info = malloc(sizeof(arrInfo));
+      arr_info->arr = arr + i * block_size;
+      arr_info->length = block_size > length-i ? length - i : block_size;
+      if(arr_info->length > 0){
+        pthread_create(&threads[i], NULL, comb_sort_thread, (void*) arr_info);
+      }
     }
-    simd_merge_sort(arr, length, L1_CACAE_SIZE);
+
+    for (int i = 0; i < MAX_THREAD; i++){
+      pthread_join(threads[i], NULL); 
+    }
+    simd_merge_sort(arr, length, block_size);
+
   } else {
-     simd_comb_sort(arr, length);
+    simd_comb_sort(arr, length);
   }
 
 }
