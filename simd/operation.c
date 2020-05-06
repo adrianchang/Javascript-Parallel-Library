@@ -134,7 +134,7 @@ void EMSCRIPTEN_KEEPALIVE simd_compare_and_swap_int(int* in, int size){
 
 }
 
-void EMSCRIPTEN_KEEPALIVE simd_sort_int(int* in, int size){
+void EMSCRIPTEN_KEEPALIVE simd_odd_even_sort_int(int* in, int size){
 
   for (int i = 0; i < size; i++){
     
@@ -278,12 +278,6 @@ void EMSCRIPTEN_KEEPALIVE simd_comb_sort(int* arr, int length){
     i2++;
     i3++; 
   }
-
-  // for (i = 0; i < length; i++) {
-  //   // wasm_v128_store(&arr[i*4], vectors[i]); 
-  //   printf("%d ", arr[i]);
-  // }
-  // printf("\n");
 }
 
 
@@ -297,8 +291,6 @@ void EMSCRIPTEN_KEEPALIVE simd_int_vector_sort(int* in, int size){
 
 // Take in two int array of size 4
 void EMSCRIPTEN_KEEPALIVE simd_vector_cmpswap(int* a, int* b){
-  // int myB[] = {1, 2, 3, 4};
-  // int myA[] = {5, 6, 7, 8};
   v128_t vector_a = wasm_v128_load(a);
   v128_t vector_b = wasm_v128_load(b);
 
@@ -306,23 +298,11 @@ void EMSCRIPTEN_KEEPALIVE simd_vector_cmpswap(int* a, int* b){
 
   wasm_v128_store(a, vector_a);
   wasm_v128_store(b, vector_b);
-  // printf("a: ");
-  // for (int i = 0; i < 4; i++) {
-  //   printf("%d ", a[i]);
-  // }
-  // printf("\n");
 
-  // printf("b: ");
-  // for (int i = 0; i < 4; i++) {
-  //   printf("%d ", b[i]);
-  // }
-  // printf("\n");
 }
 
 // Take in two int array of size 4
 void EMSCRIPTEN_KEEPALIVE simd_vector_skew_cmpswap(int* a, int* b){
-  // int myB[] = {1, 2, 3, 4};
-  // int myA[] = {5, 6, 7, 8};
 
   v128_t vector_a = wasm_v128_load(a);
   v128_t vector_b = wasm_v128_load(b);
@@ -331,17 +311,6 @@ void EMSCRIPTEN_KEEPALIVE simd_vector_skew_cmpswap(int* a, int* b){
 
   wasm_v128_store(a, vector_a);
   wasm_v128_store(b, vector_b);
-  // printf("a: ");
-  // for (int i = 0; i < 4; i++) {
-  //   printf("%d ", a[i]);
-  // }
-  // printf("\n");
-
-  // printf("b: ");
-  // for (int i = 0; i < 4; i++) {
-  //   printf("%d ", b[i]);
-  // }
-  // printf("\n");
 }
 
 
@@ -394,21 +363,6 @@ void EMSCRIPTEN_KEEPALIVE simd_vector_merge(v128_t* vector_a_ptr, v128_t* vector
 
   *vector_a_ptr = vector_a;
   *vector_b_ptr = vector_b;
-
-  // wasm_v128_store(a, vector_a);
-  // wasm_v128_store(b, vector_b);
-
-  // printf("a: ");
-  // for (int i = 0; i < 4; i++) {
-  //   printf("%d ", a[i]);
-  // }
-  // printf("\n");
-
-  // printf("b: ");
-  // for (int i = 0; i < 4; i++) {
-  //   printf("%d ", b[i]);
-  // }
-  // printf("\n");
 }
 
 

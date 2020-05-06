@@ -12,11 +12,7 @@ const simd_min_int = em_module.cwrap('simd_min_int', 'null', ['number', 'number'
 const simd_min_float = em_module.cwrap('simd_min_float', 'null', ['number', 'number', 'number', 'number']);
 const simd_max_int = em_module.cwrap('simd_max_int', 'null', ['number', 'number', 'number', 'number']);
 const simd_max_float = em_module.cwrap('simd_max_float', 'null', ['number', 'number', 'number', 'number']);
-const simd_sort_int = em_module.cwrap('simd_sort_int', 'null', ['number', 'number']);
-const simd_sort_vecotr_int = em_module.cwrap('simd_int_vector_sort', 'null', ['number', 'number']);
-const simd_cmpswap_int = em_module.cwrap('simd_vector_cmpswap', 'null', ['number', 'number']);
-const simd_vector_skew_cmpswap = em_module.cwrap('simd_vector_skew_cmpswap', 'null', ['number', 'number']);
-const simd_comb_sort = em_module.cwrap('simd_comb_sort', 'null', ['number', 'number']);
+const simd_odd_even_sort_int = em_module.cwrap('simd_odd_even_sort_int', 'null', ['number', 'number']);
 const simd_aa_sort = em_module.cwrap('simd_aa_sort', 'null', ['number', 'number']);
 
 
@@ -75,98 +71,82 @@ function simd_float_pointer_to_float32_arr(arr_pointer, length) {
 /* Parameter: a b c pointer in the shared heap space
    Return: void
 */
-function sim_add_int_array(a_pointer, b_pointer, c_pointer, length) {
+function simd_add_int_array(a_pointer, b_pointer, c_pointer, length) {
   simd_add_int(a_pointer, b_pointer, c_pointer, length);
 }
 
 /* Parameter: a b c pointer in the shared heap space
    Return: void
 */
-function sim_add_float_array(a_pointer, b_pointer, c_pointer, length) {
+function simd_add_float_array(a_pointer, b_pointer, c_pointer, length) {
   simd_add_float(a_pointer, b_pointer, c_pointer, length);
 }
 
 /* Parameter: a b c pointer in the shared heap space
    Return: void
 */
-function sim_sub_int_array(a_pointer, b_pointer, c_pointer, length) {
+function simd_sub_int_array(a_pointer, b_pointer, c_pointer, length) {
   simd_sub_int(a_pointer, b_pointer, c_pointer, length);
 }
 
 /* Parameter: a b c pointer in the shared heap space
    Return: void
 */
-function sim_sub_float_array(a_pointer, b_pointer, c_pointer, length) {
+function simd_sub_float_array(a_pointer, b_pointer, c_pointer, length) {
   simd_sub_float(a_pointer, b_pointer, c_pointer, length);
 }
 
 /* Parameter: a b c pointer in the shared heap space
    Return: void
 */
-function sim_multiply_int_array(a_pointer, b_pointer, c_pointer, length) {
+function simd_multiply_int_array(a_pointer, b_pointer, c_pointer, length) {
   simd_multiply_int(a_pointer, b_pointer, c_pointer, length);
 }
 
 /* Parameter: a b c pointer in the shared heap space
    Return: void
 */
-function sim_multiply_float_array(a_pointer, b_pointer, c_pointer, length){
+function simd_multiply_float_array(a_pointer, b_pointer, c_pointer, length){
   simd_multiply_float(a_pointer, b_pointer, c_pointer, length);
 }
 
 /* Parameter: a b c pointer in the shared heap space
    Return: void
 */
-function sim_div_float_array(a_pointer, b_pointer, c_pointer, length){
+function simd_div_float_array(a_pointer, b_pointer, c_pointer, length){
   simd_div_float(a_pointer, b_pointer, c_pointer, length);
 }
 
 /* Parameter: a b c pointer in the shared heap space
    Return: void
 */
-function sim_min_int_array(a_pointer, b_pointer, c_pointer, length) {
+function simd_min_int_array(a_pointer, b_pointer, c_pointer, length) {
   simd_min_int(a_pointer, b_pointer, c_pointer, length);
 }
 
 /* Parameter: a b c pointer in the shared heap space
    Return: void
 */
-function sim_min_float_array(a_pointer, b_pointer, c_pointer, length) {
+function simd_min_float_array(a_pointer, b_pointer, c_pointer, length) {
   simd_min_float(a_pointer, b_pointer, c_pointer, length);
 }
 
 /* Parameter: a b c pointer in the shared heap space
    Return: void
 */
-function sim_max_int_array(a_pointer, b_pointer, c_pointer, length) {
+function simd_max_int_array(a_pointer, b_pointer, c_pointer, length) {
   simd_max_int(a_pointer, b_pointer, c_pointer, length);
 }
 
 /* Parameter: a b c pointer in the shared heap space
    Return: void
 */
-function sim_max_float_array(a_pointer, b_pointer, c_pointer, length) {
+function simd_max_float_array(a_pointer, b_pointer, c_pointer, length) {
   simd_max_float(a_pointer, b_pointer, c_pointer, length);
 }
 
-function sim_sort_int_array(a_pointer, length){
-  simd_sort_int(a_pointer, length);
-}
-
-function simd_sort_int_vecotr(a_pointer, length){
-  simd_sort_vecotr_int(a_pointer, length);
-}
-
-function simd_compswap_int(a_pointer, b_pointer){
-  simd_cmpswap_int(a_pointer, b_pointer);
-}
-
-function simd_skew_compswap_int(a_pointer, b_pointer){
-  simd_vector_skew_cmpswap(a_pointer, b_pointer);
-}
-
-function simd_comb_sort_int(arr_pointer, length) {
-  simd_comb_sort(arr_pointer, length);
+function simd_odd_even_sort_int_array(a_pointer, length){
+  simd_odd_even_sort_int(a_pointer, length);
 }
 
 function simd_aa_sort_int(a_pointer, length){
@@ -179,21 +159,17 @@ module.exports = {
   simd_delete_int_array : simd_delete_int_array,
   simd_int_pointer_to_int32_arr : simd_int_pointer_to_int32_arr,
   simd_float_pointer_to_float32_arr : simd_float_pointer_to_float32_arr,
-  sim_add_int_array : sim_add_int_array,
-  sim_add_float_array : sim_add_float_array,
-  sim_sub_int_array : sim_sub_int_array,
-  sim_sub_float_array : sim_sub_float_array,
-  sim_multiply_int_array : sim_multiply_int_array,
-  sim_multiply_float_array : sim_multiply_float_array,
-  sim_div_float_array : sim_div_float_array,
-  sim_min_int_array : sim_min_int_array,
-  sim_min_float_array : sim_min_float_array,
-  sim_max_int_array : sim_max_int_array,
-  sim_max_float_array : sim_max_float_array,
-  sim_sort_int_array : sim_sort_int_array,
-  simd_sort_int_vecotr : simd_sort_int_vecotr,
-  simd_compswap_int : simd_compswap_int,
-  simd_skew_compswap_int : simd_skew_compswap_int,
-  simd_comb_sort_int : simd_comb_sort_int,
+  simd_add_int_array : simd_add_int_array,
+  simd_add_float_array : simd_add_float_array,
+  simd_sub_int_array : simd_sub_int_array,
+  simd_sub_float_array : simd_sub_float_array,
+  simd_multiply_int_array : simd_multiply_int_array,
+  simd_multiply_float_array : simd_multiply_float_array,
+  simd_div_float_array : simd_div_float_array,
+  simd_min_int_array : simd_min_int_array,
+  simd_min_float_array : simd_min_float_array,
+  simd_max_int_array : simd_max_int_array,
+  simd_max_float_array : simd_max_float_array,
+  simd_odd_even_sort_int : simd_odd_even_sort_int_array,
   simd_aa_sort_int : simd_aa_sort_int
 }
