@@ -34,8 +34,17 @@ function simd_new_int_array(arr) {
   return arr_pointer;
 }
 
+/* Set the value in arr to arr_pointer in the shared heap space
+   Parameter: Int32Array arr, arr_pointer return by function simd_new_int_array
+*/
+function simd_set_value_to_int_array(arr, arr_pointer) {
+  const bytes_per_element = 4;
+  em_module.HEAP32.set(arr, arr_pointer/bytes_per_element);
+  return;
+}
+
 /* Set the arr in the shared heap space
-   Parameter: Int32Array arr
+   Parameter: Float32Array arr
    Return: pointer of the arr(offset in the shared heap space)
 */
 function simd_new_float_array(arr) {
@@ -48,6 +57,17 @@ function simd_new_float_array(arr) {
   em_module.HEAPF32.set(arr, arr_pointer/bytes_per_element);
 
   return arr_pointer;
+}
+
+/* Set the value in arr to arr_pointer in the shared heap space
+   Parameter: Float32Array arr, arr_pointer return by function simd_new_float_array
+*/
+
+function simd_set_value_to_float_array(arr, arr_pointer) {
+  const bytes_per_element = 4;
+  em_module.HEAPF32.set(arr, arr_pointer/bytes_per_element);
+
+  return;
 }
 
 /* Delete the arr in the shared heap space
@@ -155,7 +175,9 @@ function simd_aa_sort_int(a_pointer, length){
 
 module.exports = {
   simd_new_int_array : simd_new_int_array,
+  simd_set_value_to_int_array : simd_set_value_to_int_array,
   simd_new_float_array : simd_new_float_array,
+  simd_set_value_to_float_array : simd_set_value_to_float_array,
   simd_delete_int_array : simd_delete_int_array,
   simd_int_pointer_to_int32_arr : simd_int_pointer_to_int32_arr,
   simd_float_pointer_to_float32_arr : simd_float_pointer_to_float32_arr,
