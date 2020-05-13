@@ -1,3 +1,0 @@
-## Reminders
-compile command: emcc test.cpp -O3 -s EXPORTED_FUNCTIONS='["_int_sqrt"]' -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
-The output file might not be at the right place....
